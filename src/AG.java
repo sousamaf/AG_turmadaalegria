@@ -94,6 +94,13 @@ public class AG {
 		}
 	}
 	
+	void mutacao()
+	{
+		int quem = this.selecao();
+		int gene = new Random().nextInt(TAM_GENE);
+		POP_AUX[quem][gene] = POP_AUX[quem][gene] == 0 ? 1 : 0;
+	}
+	
 	void mostra_pop_melhor()
 	{
 		int i;
