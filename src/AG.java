@@ -17,6 +17,7 @@ public class AG {
 	int[][] POP_AUX = new int[TAM_POP][TAM_GENE];
 	
 	public float[] fitness = new float[TAM_POP];
+	public float[] fitness_porcentagem = new float[TAM_POP];
 	
 	public float[] livros = new float[TAM_GENE];
 	
@@ -26,7 +27,10 @@ public class AG {
 		int i;
 		
 		for(i = 0; i < TAM_POP; i++)
+		{
 			fitness[i] = 0.0f;
+			fitness_porcentagem[i] = 0.0f;
+		}
 			
 		this.livros[0] = 0.9f;
 		this.livros[1] = 1.1f;
@@ -46,20 +50,44 @@ public class AG {
 	
 	int selecao()
 	{
-		int i = new Random().nextInt(TAM_POP);
+		int i = this.roleta(); //new Random().nextInt(TAM_POP);
+		return i;
+	}
+	
+	int roleta()
+	{
+		int quem = new Random().nextInt(100);
+		int i;
+		float acumulador = 0.0f;
+			
+		for(i = 0; i < TAM_POP; i++)
+		{
+			acumulador += fitness_porcentagem[i];
+			if(quem < acumulador)
+				return i;
+		}
 		return i;
 	}
 	
 	void avaliacao()
 	{
 		int i, g;
+		float fitness_total = 0.0f;
+		
 		for(i = 0; i < TAM_POP; i++)
 		{
 			this.fitness[i] = 0.0f;
+			this.fitness_porcentagem[i] = 0.0f;
 			for(g = 0; g < TAM_GENE; g++)
 				this.fitness[i] += (POP[i][g] * this.livros[g]);
 			if(fitness[i] > this.carga)
 				fitness[i] = 0.0f;
+			fitness_total += fitness[i];
+		}
+		
+		for(i = 0; i < TAM_POP; i++)
+		{
+			fitness_porcentagem[i] = (fitness[i] * 100) / fitness_total;
 		}
 	}
 
@@ -179,7 +207,10 @@ public class AG {
 			// gera descendentes a partir de cruzamento
 			while(ag.index_aux < ag.TAM_POP)
 			{
-				ag.cruzamento_simples();
+				if(new Random().nextInt(2) == 0)
+					ag.cruzamento_uniforme();
+				else
+					ag.cruzamento_simples();
 				ag.index_aux += 2;
 			}
 			
